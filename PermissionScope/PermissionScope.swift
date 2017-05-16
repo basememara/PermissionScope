@@ -31,8 +31,14 @@ typealias resultsForConfigClosure     = ([PermissionResult]) -> Void
     public var permissionButtonΒorderWidth  : CGFloat = 1
     /// Corner radius for the permission buttons.
     public var permissionButtonCornerRadius : CGFloat = 6
+    /// Line break mode for permission button's label
+    public var permissionButtonLineBreakMode: NSLineBreakMode = .byWordWrapping
+    /// Text alignment for permission buttons
+    public var permissionButtonTextAlignment: NSTextAlignment = .center
     /// Color for the permission labels' text color.
     public var permissionLabelColor:UIColor = .black
+    /// Offset used to position the permission label
+    public var permissionLabelOffset: CGSize = .zero
     /// Font used for all the UIButtons
     public var buttonFont:UIFont            = .boldSystemFont(ofSize: 14)
     /// Font used for all the UILabels
@@ -259,7 +265,7 @@ typealias resultsForConfigClosure     = ([PermissionResult]) -> Void
                     let label = self.permissionLabels[index]
                     label.center = self.contentView.center
                     label.frame.offsetInPlace(dx: -self.contentView.frame.origin.x, dy: -self.contentView.frame.origin.y)
-                    label.frame.offsetInPlace(dx: 0, dy: -((dialogHeight/2)-205) + CGFloat(index * baseOffset))
+                    label.frame.offsetInPlace(dx: 0 + permissionLabelOffset.width, dy: -((dialogHeight/2)-205) + CGFloat(index * baseOffset) + permissionLabelOffset.height)
                     
                     index = index + 1
             })
@@ -294,6 +300,8 @@ typealias resultsForConfigClosure     = ([PermissionResult]) -> Void
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 220, height: 40))
         button.setTitleColor(permissionButtonTextColor, for: .normal)
         button.titleLabel?.font = buttonFont
+        button.titleLabel?.lineBreakMode = permissionButtonLineBreakMode
+        button.titleLabel?.textAlignment = permissionButtonTextAlignment
 
         button.layer.borderWidth = permissionButtonΒorderWidth
         button.layer.borderColor = permissionButtonBorderColor.cgColor
@@ -346,10 +354,13 @@ typealias resultsForConfigClosure     = ([PermissionResult]) -> Void
     func permissionStyledLabel(_ type: PermissionType) -> UILabel {
         let label  = UILabel(frame: CGRect(x: 0, y: 0, width: 260, height: 50))
         label.font = labelFont
-        label.numberOfLines = 2
+        label.numberOfLines = 0
         label.textAlignment = .center
         label.text = permissionMessages[type]
         label.textColor = permissionLabelColor
+        
+        // adjust label height based on content.
+        label.sizeToFit()
         
         return label
     }
